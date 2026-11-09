@@ -1,3 +1,8 @@
+Esse erro indica que a cópia do arquivo `script.js` acabou sendo cortada antes de colar no github.dev.
+
+PASSO 3 — Copie o código abaixo usando o botão Copiar do bloco de código.
+
+```javascript
 // Configuração fixa do aluno
 const CONFIG_ALUNO = {
   turma: "8B",
@@ -183,4 +188,250 @@ function renderizarBoletim() {
       tdN1.textContent = formatarNota(n1);
 
       const tdN2 = document.createElement("td");
-      tdN2.textContent
+      tdN2.textContent = formatarNota(n2);
+
+      const tdN3 = document.createElement("td");
+      tdN3.textContent = formatarNota(n3);
+
+      const tdMedia = document.createElement("td");
+      const strongMedia = document.createElement("strong");
+      strongMedia.textContent = formatarNota(media);
+      tdMedia.appendChild(strongMedia);
+
+      const tdFaltas = document.createElement("td");
+      tdFaltas.textContent = totalFaltasDisciplina;
+
+      const tdSit = document.createElement("td");
+      const spanSit = document.createElement("span");
+      spanSit.className = `status ${statusClass}`;
+      spanSit.textContent = situacao;
+      tdSit.appendChild(spanSit);
+
+      tr.appendChild(tdDisc);
+      tr.appendChild(tdN1);
+      tr.appendChild(tdN2);
+      tr.appendChild(tdN3);
+      tr.appendChild(tdMedia);
+      tr.appendChild(tdFaltas);
+      tr.appendChild(tdSit);
+    }
+
+    tbody.appendChild(tr);
+  });
+
+  const mediaGeral = disciplinasComMediaCount > 0 
+    ? (somaMediasGerais / disciplinasComMediaCount).toFixed(1).replace('.', ',')
+    : "—";
+
+  document.getElementById("media-geral").textContent = mediaGeral;
+  document.getElementById("total-faltas").textContent = totalFaltasGeral;
+  document.getElementById("bom-desempenho-count").textContent = bomDesempenhoCount;
+  document.getElementById("atencao-count").textContent = atencaoCount;
+}
+
+// Validação estrita de nota digitada (0 a 10, ponto/vírgula ou vazio)
+function validarNotaDigitada(str) {
+  if (str === null || str === undefined) return { valida: true, valor: null };
+  const s = String(str).trim();
+  if (s === "") return { valida: true, valor: null };
+
+  const normalizada = s.replace(',', '.');
+  const num = Number(normalizada);
+
+  if (isNaN(num) || num < 0 || num > 10) {
+    return { valida: false, valor: null };
+  }
+
+  return { valida: true, valor: num };
+}
+
+// Validação estrita de falta digitada (inteiro >= 0)
+function validarFaltaDigitada(str) {
+  if (str === null || str === undefined) return { valida: false, valor: null };
+  const s = String(str).trim();
+  if (s === "") return { valida: false, valor: null };
+
+  if (!/^\d+$/.test(s)) {
+    return { valida: false, valor: null };
+  }
+
+  const num = parseInt(s, 10);
+  if (isNaN(num) || num < 0) {
+    return { valida: false, valor: null };
+  }
+
+  return { valida: true, valor: num };
+}
+
+// Ação de Login (Abrir Boletim)
+async function efetuarLogin() {
+  const pin = pinInput.value;
+  if (!pin) {
+    loginStatus.className = "status-message";
+    loginStatus.textContent = "Digite o PIN para entrar.";
+    return;
+  }
+
+  loginStatus.className = "status-message info";
+  loginStatus.textContent = "Conectando...";
+  btnLogin.disabled = true;
+
+  try {
+    const resposta = await fetch(`${CONFIG_ALUNO.apiUrl}/api/v1/boletins/abrir`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        turma: CONFIG_ALUNO.turma,
+        numero_chamada: CONFIG_ALUNO.numeroChamada,
+        pin: pin
+      })
+    });
+
+    if (resposta.status === 401) {
+      loginStatus.className = "status-message";
+      loginStatus.textContent = "Turma, chamada ou PIN inválidos.";
+      btnLogin.disabled = false;
+      return;
+    }
+
+    if (resposta.status === 429) {
+      loginStatus.className = "status-message";
+      loginStatus.textContent = "Muitas tentativas. Aguarde um minuto e tente novamente.";
+      btnLogin.disabled = false;
+      return;
+    }
+
+    if (!resposta.ok) {
+      throw new Error("Erro na rede");
+    }
+
+    const resultado = await resposta.json();
+
+    pinSessao = pin;
+    pinInput.value = "";
+
+    if (resultado && resultado.dados && Array.isArray(resultado.dados.disciplinas) && resultado.dados.disciplinas.length > 0) {
+      dadosAtuais = resultado.dados.disciplinas.map(normalizarDisciplina);
+    } else {
+      dadosAtuais = dadosBoletimPadrao.map(normalizarDisciplina);
+    }
+
+    loginScreen.style.display = "none";
+    boletimScreen.style.display = "block";
+    renderizarBoletim();
+
+  } catch (err) {
+    loginStatus.className = "status-message";
+    loginStatus.textContent = "Não foi possível conectar ao servidor. Tente novamente.";
+    btnLogin.disabled = false;
+  }
+}
+
+// Salvar alterações na API
+async function salvarAlteracoes() {
+  const inputsEdicao = document.querySelectorAll('.input-edicao');
+  inputsEdicao.forEach(i => i.classList.remove('invalido'));
+
+  let erroValidacao = false;
+  const novasDisciplinas = JSON.parse(JSON.stringify(dadosAtuais));
+
+  dadosAtuais.forEach((item, index) => {
+    const inputN1 = document.querySelector(`.edit-n1[data-index="${index}"]`);
+    const inputN2 = document.querySelector(`.edit-n2[data-index="${index}"]`);
+    const inputN3 = document.querySelector(`.edit-n3[data-index="${index}"]`);
+    const inputF1 = document.querySelector(`.edit-f1[data-index="${index}"]`);
+    const inputF2 = document.querySelector(`.edit-f2[data-index="${index}"]`);
+    const inputF3 = document.querySelector(`.edit-f3[data-index="${index}"]`);
+
+    const resN1 = validarNotaDigitada(inputN1.value);
+    const resN2 = validarNotaDigitada(inputN2.value);
+    const resN3 = validarNotaDigitada(inputN3.value);
+    const resF1 = validarFaltaDigitada(inputF1.value);
+    const resF2 = validarFaltaDigitada(inputF2.value);
+    const resF3 = validarFaltaDigitada(inputF3.value);
+
+    if (!resN1.valida) { inputN1.classList.add('invalido'); erroValidacao = true; }
+    if (!resN2.valida) { inputN2.classList.add('invalido'); erroValidacao = true; }
+    if (!resN3.valida) { inputN3.classList.add('invalido'); erroValidacao = true; }
+    if (!resF1.valida) { inputF1.classList.add('invalido'); erroValidacao = true; }
+    if (!resF2.valida) { inputF2.classList.add('invalido'); erroValidacao = true; }
+    if (!resF3.valida) { inputF3.classList.add('invalido'); erroValidacao = true; }
+
+    if (!erroValidacao) {
+      novasDisciplinas[index].tri1 = resN1.valor;
+      novasDisciplinas[index].tri2 = resN2.valor;
+      novasDisciplinas[index].tri3 = resN3.valor;
+      novasDisciplinas[index].faltas = [resF1.valor, resF2.valor, resF3.valor];
+    }
+  });
+
+  if (erroValidacao) {
+    salvarStatus.className = "status-message";
+    salvarStatus.textContent = "Verifique os campos destacados em vermelho.";
+    return;
+  }
+
+  salvarStatus.className = "status-message info";
+  salvarStatus.textContent = "Salvando...";
+  btnAlternarEdicao.disabled = true;
+
+  try {
+    const resposta = await fetch(`${CONFIG_ALUNO.apiUrl}/api/v1/boletins/salvar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        turma: CONFIG_ALUNO.turma,
+        numero_chamada: CONFIG_ALUNO.numeroChamada,
+        pin: pinSessao,
+        dados: {
+          disciplinas: novasDisciplinas
+        }
+      })
+    });
+
+    if (!resposta.ok) {
+      throw new Error("Erro ao salvar");
+    }
+
+    dadosAtuais = novasDisciplinas;
+    modoEdicao = false;
+    btnAlternarEdicao.textContent = "Alterar dados";
+    btnAlternarEdicao.disabled = false;
+
+    salvarStatus.className = "status-message success";
+    salvarStatus.textContent = "Dados salvos com sucesso.";
+
+    renderizarBoletim();
+
+    setTimeout(() => {
+      salvarStatus.textContent = "";
+    }, 4000);
+
+  } catch (err) {
+    salvarStatus.className = "status-message";
+    salvarStatus.textContent = "Falha ao salvar alterações. Tente novamente.";
+    btnAlternarEdicao.disabled = false;
+  }
+}
+
+// Event Listeners
+btnLogin.addEventListener("click", efetuarLogin);
+
+pinInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    efetuarLogin();
+  }
+});
+
+btnAlternarEdicao.addEventListener("click", () => {
+  if (!modoEdicao) {
+    modoEdicao = true;
+    btnAlternarEdicao.textContent = "Salvar alterações";
+    salvarStatus.textContent = "";
+    renderizarBoletim();
+  } else {
+    salvarAlteracoes();
+  }
+});
+
+```
