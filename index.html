@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <link rel="stylesheet" href="style.css">  
-    <title>boletim8B</title>
-</head>
-<body>
-    
-</body>
-</html><!DOCTYPE html>
-<html lang="pt-BR">
-<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boletim Digital - 8º Ano</title>
@@ -20,60 +9,86 @@
 <body>
 
   <div class="container">
-    <!-- Cabeçalho Principal -->
-    <header class="header">
-      <h1>Boletim Digital</h1>
-      <p class="subtitle">8º Ano | Estudante Exemplo</p>
-    </header>
+    <!-- Tela de Acesso por PIN -->
+    <div id="login-screen" class="login-container">
+      <header class="header">
+        <h1>Boletim Digital</h1>
+        <p class="subtitle">8º Ano | Turma 8B | N.º 23</p>
+      </header>
+      <div class="card login-card">
+        <h3>Acesso ao Boletim</h3>
+        <p class="login-instruction">Digite seu PIN para acessar os dados do boletim:</p>
+        <div class="login-form">
+          <input type="password" id="pin-input" placeholder="Digite seu PIN" maxlength="20" autocomplete="off" />
+          <button type="button" id="btn-login" class="btn btn-primary">Entrar</button>
+        </div>
+        <p id="login-status" class="status-message"></p>
+      </div>
+    </div>
 
-    <!-- Área Superior: Cards de Resumo -->
-    <section class="cards-grid">
-      <div class="card">
-        <h3>Média Geral</h3>
-        <p id="media-geral" class="card-value">—</p>
+    <!-- Conteúdo do Boletim -->
+    <div id="boletim-screen" style="display: none;">
+      <!-- Cabeçalho Principal -->
+      <header class="header">
+        <h1>Boletim Digital</h1>
+        <p class="subtitle">8º Ano | Turma 8B | N.º 23</p>
+      </header>
+
+      <!-- Painel de Ações -->
+      <div class="actions-panel">
+        <button type="button" id="btn-alternar-edicao" class="btn btn-secondary">Alterar dados</button>
+        <p id="salvar-status" class="status-message"></p>
       </div>
 
-      <div class="card">
-        <h3>Total de Faltas</h3>
-        <p id="total-faltas" class="card-value">—</p>
-      </div>
+      <!-- Área Superior: Cards de Resumo -->
+      <section class="cards-grid">
+        <div class="card">
+          <h3>Média Geral</h3>
+          <p id="media-geral" class="card-value">—</p>
+        </div>
 
-      <div class="card">
-        <h3>Bom Desempenho</h3>
-        <p id="bom-desempenho-count" class="card-value">—</p>
-      </div>
+        <div class="card">
+          <h3>Total de Faltas</h3>
+          <p id="total-faltas" class="card-value">—</p>
+        </div>
 
-      <div class="card">
-        <h3>Precisam de Atenção</h3>
-        <p id="atencao-count" class="card-value">—</p>
-      </div>
+        <div class="card">
+          <h3>Bom Desempenho</h3>
+          <p id="bom-desempenho-count" class="card-value">—</p>
+        </div>
 
-      <div class="card">
-        <h3>Frequência</h3>
-        <p id="frequencia-geral" class="card-value">92%</p>
-        <span class="card-status">Frequência adequada</span>
-      </div>
-    </section>
+        <div class="card">
+          <h3>Precisam de Atenção</h3>
+          <p id="atencao-count" class="card-value">—</p>
+        </div>
 
-    <!-- Tabela Responsiva de Disciplinas -->
-    <section class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Disciplina</th>
-            <th>1º Tri</th>
-            <th>2º Tri</th>
-            <th>3º Tri</th>
-            <th>Média</th>
-            <th>Faltas</th>
-            <th>Situação</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-corpo">
-          <!-- O JavaScript preencherá as 15 linhas automaticamente aqui -->
-        </tbody>
-      </table>
-    </section>
+        <div class="card">
+          <h3>Frequência</h3>
+          <p id="frequencia-geral" class="card-value">92%</p>
+          <span class="card-status">Frequência adequada</span>
+        </div>
+      </section>
+
+      <!-- Tabela Responsiva de Disciplinas -->
+      <section class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Disciplina</th>
+              <th>1º Tri</th>
+              <th>2º Tri</th>
+              <th>3º Tri</th>
+              <th>Média</th>
+              <th>Faltas</th>
+              <th>Situação</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-corpo">
+            <!-- O JavaScript preencherá as linhas automaticamente aqui -->
+          </tbody>
+        </table>
+      </section>
+    </div>
   </div>
 
   <script src="script.js"></script>
