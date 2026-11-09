@@ -1,8 +1,3 @@
-Esse erro indica que a cópia do arquivo `script.js` acabou sendo cortada antes de colar no github.dev.
-
-PASSO 3 — Copie o código abaixo usando o botão Copiar do bloco de código.
-
-```javascript
 // Configuração fixa do aluno
 const CONFIG_ALUNO = {
   turma: "8B",
@@ -433,5 +428,3 @@ btnAlternarEdicao.addEventListener("click", () => {
     salvarAlteracoes();
   }
 });
-
-```
