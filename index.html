@@ -69,6 +69,33 @@
         </div>
       </section>
 
+      <!-- Área de Gráficos -->
+      <section class="area-graficos">
+        <article class="card grafico-card">
+          <h3>Média por disciplina</h3>
+          <div class="grafico-container grafico-container-medias">
+            <canvas id="graficoMediasDisciplinas"></canvas>
+          </div>
+        </article>
+
+        <article class="card grafico-card">
+          <h3>Evolução da média geral</h3>
+          <div class="grafico-container">
+            <canvas id="graficoEvolucaoTrimestres"></canvas>
+          </div>
+        </article>
+
+        <article id="card-faltas-trimestre" class="card grafico-card">
+          <div class="grafico-header">
+            <h3>Faltas por trimestre</h3>
+            <span id="estadoFaltas" class="badge-perigo" style="display: none;">Perigo</span>
+          </div>
+          <div class="grafico-container">
+            <canvas id="graficoFaltasTrimestres"></canvas>
+          </div>
+        </article>
+      </section>
+
       <!-- Tabela Responsiva de Disciplinas -->
       <section class="table-container">
         <table>
@@ -91,6 +118,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
